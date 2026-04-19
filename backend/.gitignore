@@ -69,3 +69,5 @@ temp/
 
 # TypeScript cache
 *.tsbuildinfo
+
+repomix-output.xml
