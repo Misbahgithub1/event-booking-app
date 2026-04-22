@@ -3,36 +3,42 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../model/user.js";
 import { registerSchema, loginSchema } from "../validation/auth.validation.js";
+import { sendEmail, EmailType } from "../model/utils/sendEmail.js"; 
+import Otp, { OtpPurpose } from "../model/otp.js";
 
 
 // ------------------------
-// REGISTER USER
+// REGISTER USER + OTP FLOW
 // ------------------------
+
+
 export const registerUser = async (req: Request, res: Response) => {
   try {
-
-      // 1. Zod validation
+    // 1. Validate input
     const result = registerSchema.safeParse(req.body);
 
     if (!result.success) {
       return res.status(400).json({
         message: "Validation error",
-        errors: result.error.issues.map(e => e.message),
+        errors: result.error.issues.map((e) => e.message),
       });
     }
 
     const { email, password } = result.data;
 
-    // 2. Check if user exists
+    // 2. Check user exists
     const existingUser = await User.findOne({ email });
+
     if (existingUser) {
-      return res.status(400).json({ message: "User already exists" });
+      return res.status(400).json({
+        message: "User already exists",
+      });
     }
 
     // 3. Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // 4. Create user
+    // 4. Create user (not verified)
     const user = await User.create({
       email,
       password: hashedPassword,
@@ -40,12 +46,37 @@ export const registerUser = async (req: Request, res: Response) => {
       role: "user",
     });
 
+    // 5. Generate OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
+
+    // 6. Save OTP
+    await Otp.create({
+      email,
+      otp,
+      purpose: OtpPurpose.OTP_VERIFICATION,
+      expiresAt,
+    });
+
+    // 7. Send Email
+    await sendEmail({
+      to: email,
+      type: EmailType.OTP_VERIFICATION,
+      otp,
+      expiresAt,
+    });
+
+    // 8. Response
     return res.status(201).json({
-      message: "User registered successfully",
+      message: "User registered. OTP sent to email.",
       userId: user._id,
     });
   } catch (error) {
-    return res.status(500).json({ message: "Server error", error });
+    return res.status(500).json({
+      message: "Server error",
+      error,
+    });
   }
 };
 
