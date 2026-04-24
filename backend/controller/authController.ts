@@ -1,7 +1,7 @@
 import { registerSchema, loginSchema } from "../validation/auth.validation.js";
 import { registerService, loginService } from "../services/auth.service.js";
 import { Request, Response, NextFunction } from "express";
-
+import {verifyOtpService } from "../services/auth.service.js";
 // ------------------------
 // REGISTER CONTROLLER
 // ------------------------
@@ -36,6 +36,7 @@ export const registerUser = async (
 
     return res.status(201).json({
       message: "User registered. OTP sent to email.",
+      email: email,
     });
 
   } catch (error) {
@@ -44,6 +45,35 @@ export const registerUser = async (
     });
   }
 };
+
+
+
+
+
+// ------------------------
+// VERIFY OTP CONTROLLER
+// ------------------------
+export const verifyOtp = async (req: Request, res: Response) => {
+  try {
+    const { email, otp } = req.body
+
+    await verifyOtpService(email, otp)
+
+    return res.status(200).json({
+      message: "Account verified successfully. Now you can login."
+    })
+
+  } catch (err) {
+    if (err instanceof Error && err.message === "INVALID_OR_EXPIRED_OTP") {
+      return res.status(400).json({
+        message: "Invalid or expired OTP"
+      })
+    }
+    return res.status(500).json({ message: "Server error" })
+  }
+}
+
+
 
 // ------------------------
 // LOGIN CONTROLLER

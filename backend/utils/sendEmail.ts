@@ -1,6 +1,5 @@
 import nodemailer from "nodemailer";
 
-
 export enum EmailType {
   OTP_VERIFICATION = "OTP_VERIFICATION",
   BOOKING_CONFIRMATION = "BOOKING_CONFIRMATION",
@@ -15,15 +14,6 @@ interface SendEmailParams {
   eventName?: string;
 }
 
-// transporter (reusable)
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
-
 export const sendEmail = async ({
   to,
   type,
@@ -31,6 +21,16 @@ export const sendEmail = async ({
   expiresAt,
   eventName,
 }: SendEmailParams) => {
+
+  // Create transporter ONLY when function runs
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_USER?.trim(),
+      pass: process.env.EMAIL_PASS?.trim(),
+    },
+  });
+
   let subject = "";
   let html = "";
 
@@ -64,10 +64,17 @@ export const sendEmail = async ({
       break;
   }
 
-  await transporter.sendMail({
-    from: `"Event App" <${process.env.EMAIL_USER}>`,
-    to,
-    subject,
-    html,
-  });
+  try {
+    await transporter.sendMail({
+      from: `"Event App" <${process.env.EMAIL_USER}>`,
+      to,
+      subject,
+      html,
+    });
+
+    
+  } catch (error: any) {
+    console.error("Email sending failed:", error.message);
+    throw error;
+  }
 };
