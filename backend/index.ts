@@ -31,7 +31,7 @@ mongoose
   })
   .catch((err) => {
     console.error("Database connection failed");
-    process.exit(1); // fail fast (recommended)
+    process.exit(1); // fail fast 
   });
 
 // ===============================
