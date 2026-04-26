@@ -1,5 +1,3 @@
-
-
 import Otp, { OtpPurpose } from "../model/otp.js";
 import jwt, { SignOptions } from "jsonwebtoken";
 
@@ -16,6 +14,8 @@ export const deleteVerificationOtps = async (email: string) => {
 };
 
 
+export const generateToken = (userId: string, role: string) => {
+
 //  Generate JWT Token
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -25,7 +25,7 @@ if (!JWT_SECRET) {
   throw new Error("JWT_SECRET is missing in .env");
 }
 
-export const generateToken = (userId: string, role: string) => {
+
   const options: SignOptions = {
     expiresIn: JWT_EXPIRES_IN as SignOptions["expiresIn"], 
   };
