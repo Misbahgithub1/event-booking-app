@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import User, { IUser, UserRole } from "../model/user.js";
 
-//  Extend Express Request manually (simple & clean way)
+
 declare global {
   namespace Express {
     interface Request {
@@ -36,7 +36,7 @@ export const protect = async (
       return;
     }
 
-    //  Verify token (without JwtPayload interface)
+    //  Verify token 
     const decoded = jwt.verify(
       token,
       process.env.JWT_SECRET as string
