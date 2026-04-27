@@ -71,3 +71,5 @@ temp/
 *.tsbuildinfo
 
 repomix-output.xml
+
+.openai-ignore
