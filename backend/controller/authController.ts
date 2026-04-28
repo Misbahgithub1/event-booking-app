@@ -1,137 +1,115 @@
+import { Request, Response } from "express";
 import { registerSchema, loginSchema } from "../validation/auth.validation.js";
-import { registerService, loginService } from "../services/auth.service.js";
-import { Request, Response, NextFunction } from "express";
-import {verifyOtpService } from "../services/auth.service.js";
-// ------------------------
-// REGISTER CONTROLLER
-// ------------------------
+import {
+  registerService,
+  loginService,
+  verifyOtpService,
+} from "../services/auth.service.js";
 
-export const registerUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
+import { asyncHandler } from "../middleware/asyncHandler.js";
+import { ApiError } from "../utils/ApiError.js";
+import { sendResponse } from "../utils/ApiResponse.js";
+
+export const registerUser = asyncHandler(
+  async (req: Request, res: Response) => {
     const result = registerSchema.safeParse(req.body);
 
     if (!result.success) {
-      return res.status(400).json({
-        message: "Validation error",
-        errors: result.error.issues.map(e => e.message),
-      });
+      throw new ApiError(
+        400,
+        result.error.issues.map((e) => e.message).join(", ")
+      );
     }
 
     const { email, password } = result.data;
 
     try {
       await registerService(email, password);
-    } catch (err: unknown) {
-      if (err instanceof Error && err.message === "USER_EXISTS") {
-        return res.status(400).json({
-          message: "User already exists",
-        });
+    } catch (err: any) {
+      if (err?.message === "USER_EXISTS") {
+        throw new ApiError(400, "User already exists");
       }
       throw err;
     }
 
-    return res.status(201).json({
+    sendResponse({
+      res,
+      statusCode: 201,
       message: "User registered. OTP sent to email.",
-      email: email,
-    });
-
-  } catch (error) {
-    return res.status(500).json({
-      message: "Server error",
+      data: { email },
     });
   }
-};
+);
 
+export const verifyOtp = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { email, otp } = req.body;
 
-
-
-
-// ------------------------
-// VERIFY OTP CONTROLLER
-// ------------------------
-export const verifyOtp = async (req: Request, res: Response) => {
-  try {
-    const { email, otp } = req.body
-
-    await verifyOtpService(email, otp)
-
-    return res.status(200).json({
-      message: "Account verified successfully. Now you can login."
-    })
-
-  } catch (err) {
-    if (err instanceof Error && err.message === "INVALID_OR_EXPIRED_OTP") {
-      return res.status(400).json({
-        message: "Invalid or expired OTP"
-      })
+    if (!email || !otp) {
+      throw new ApiError(400, "Email and OTP are required");
     }
-    return res.status(500).json({ message: "Server error" })
+
+    try {
+      await verifyOtpService(email, otp);
+    } catch (err: any) {
+      if (err?.message === "INVALID_OR_EXPIRED_OTP") {
+        throw new ApiError(400, "Invalid or expired OTP");
+      }
+      throw err;
+    }
+
+    sendResponse({
+      res,
+      statusCode: 200,
+      message: "Account verified successfully. Now you can login.",
+    });
   }
-}
+);
 
-
-
-// ------------------------
-// LOGIN CONTROLLER
-// ------------------------
-
-export const loginUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
+export const loginUser = asyncHandler(
+  async (req: Request, res: Response) => {
     const result = loginSchema.safeParse(req.body);
 
     if (!result.success) {
-      return res.status(400).json({
-        message: "Validation error",
-        errors: result.error.issues.map(e => e.message),
-      });
+      throw new ApiError(
+        400,
+        result.error.issues.map((e) => e.message).join(", ")
+      );
     }
 
     const { email, password } = result.data;
 
-    let data;
+    let data: any;
 
     try {
       data = await loginService(email, password);
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        if (err.message === "INVALID_CREDENTIALS") {
-          return res.status(400).json({
-            message: "Invalid credentials",
-          });
-        }
+    } catch (err: any) {
+      if (err?.message === "INVALID_CREDENTIALS") {
+        throw new ApiError(400, "Invalid credentials");
+      }
 
-        if (err.message === "NOT_VERIFIED") {
-          return res.status(403).json({
-            message: "Account not verified. OTP sent to email.",
-          });
-        }
+      if (err?.message === "NOT_VERIFIED") {
+        throw new ApiError(
+          403,
+          "Account not verified. OTP sent to email."
+        );
       }
 
       throw err;
     }
 
-    return res.status(200).json({
+    sendResponse({
+      res,
+      statusCode: 200,
       message: "Login successful",
-      token: data.token,
-      user: {
-        id: data.user._id,
-       
-        email: data.user.email,
-        role: data.user.role,
+      data: {
+        token: data.token,
+        user: {
+          id: data.user._id,
+          email: data.user.email,
+          role: data.user.role,
+        },
       },
     });
-
-  } catch (error) {
-    return res.status(500).json({
-      message: "Server error",
-    });
   }
-};
+);

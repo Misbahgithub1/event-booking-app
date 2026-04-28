@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import User, { IUser, UserRole } from "../model/user.js";
-
+import { ApiError } from "../utils/ApiError.js";
 
 declare global {
   namespace Express {
@@ -29,11 +29,7 @@ export const protect = async (
     }
 
     if (!token) {
-      res.status(401).json({
-        success: false,
-        message: "Access denied. No token provided.",
-      });
-      return;
+      throw new ApiError(401, "Access denied. No token provided.");
     }
 
     //  Verify token 
@@ -46,11 +42,7 @@ export const protect = async (
     const user = await User.findById(decoded.id).select("-password");
 
     if (!user) {
-      res.status(401).json({
-        success: false,
-        message: "Invalid token. User not found.",
-      });
-      return;
+      throw new ApiError(401, "Invalid token. User not found.");
     }
 
     //  Attach user to request
@@ -58,10 +50,10 @@ export const protect = async (
 
     next();
   } catch (error) {
-    res.status(401).json({
-      success: false,
-      message: "Invalid or expired token.",
-    });
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    throw new ApiError(401, "Invalid or expired token.");
   }
 };
 
@@ -70,19 +62,11 @@ export const authorizeRoles =
   (...roles: UserRole[]) =>
   (req: Request, res: Response, next: NextFunction): void => {
     if (!req.user) {
-      res.status(401).json({
-        success: false,
-        message: "Unauthorized access.",
-      });
-      return;
+      throw new ApiError(401, "Unauthorized access.");
     }
 
     if (!roles.includes(req.user.role)) {
-      res.status(403).json({
-        success: false,
-        message: "Admin can access only.",
-      });
-      return;
+      throw new ApiError(403, "You do not have permission to access this resource.");
     }
 
     next();
