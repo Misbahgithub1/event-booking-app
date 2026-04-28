@@ -12,18 +12,36 @@ import {
 import { asyncHandler } from "../middleware/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { sendResponse } from "../utils/ApiResponse.js";
+
+
 /**
  * Create Event
  */
+
 export const createEvent = asyncHandler(async (req: Request, res: Response) => {
   if (!req.user?._id) {
     throw new ApiError(401, "Unauthorized");
   }
 
-  const { title, date, location, category, totalSeats, ticketPrice } =
-    req.body;
+  const {
+    title,
+    date,
+    location,
+    category,
+    totalSeats,
+    ticketPrice,
+    description,
+    image,
+  } = req.body;
 
-  if (!title || !date || !location || !category || !totalSeats || ticketPrice === undefined) {
+  if (!title ||
+    !date ||
+    !location ||
+    !category ||
+    !description ||
+    !image ||
+    !totalSeats ||
+    ticketPrice === undefined) {
     throw new ApiError(400, "Missing required event fields");
   }
 
@@ -41,6 +59,16 @@ export const createEvent = asyncHandler(async (req: Request, res: Response) => {
     data: event,
   });
 });
+
+
+
+
+
+
+
+
+
+
 
 /**
  * Get All Events
