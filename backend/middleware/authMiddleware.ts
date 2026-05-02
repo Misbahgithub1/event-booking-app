@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import User, { IUser, UserRole } from "../model/user.js";
+import User, { IUser, UserRole } from "../model/User.js";
 import { ApiError } from "../utils/ApiError.js";
 
 declare global {

@@ -15,6 +15,7 @@ export interface IOtp extends Document {
   isUsed: boolean;
   createdAt: Date;
   updatedAt: Date;
+   booking?: mongoose.Types.ObjectId; 
 }
 
 const otpSchema = new Schema<IOtp>(
@@ -49,6 +50,10 @@ const otpSchema = new Schema<IOtp>(
       type: Boolean,
       default: false,
     },
+    booking: {
+  type: Schema.Types.ObjectId,
+  ref: "Booking",
+},
   },
   { timestamps: true }
 );

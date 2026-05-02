@@ -1,4 +1,4 @@
-import Otp, { OtpPurpose } from "../model/otp.js";
+import Otp, { OtpPurpose } from "../model/OTP.js";
 import jwt, { SignOptions } from "jsonwebtoken";
 
 export const generateOtp = () => {

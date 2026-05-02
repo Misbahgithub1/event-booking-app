@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import  Event, { IEvent } from "../model/event.js";
+import  Event, { IEvent } from "../model/Event.js";
 
 
 /**
@@ -120,7 +120,7 @@ export const deleteEventService = async (id: string): Promise<boolean> => {
 
   if (!event) {
     throw new Error("Event not found");
-  }
+  }  
 
   return true;
 };

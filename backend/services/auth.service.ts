@@ -1,10 +1,11 @@
 
 import bcrypt from "bcryptjs";
-import User from "../model/user.js";
-import Otp, { OtpPurpose } from "../model/otp.js";
 import { sendEmail, EmailType } from "../utils/sendEmail.js";
 import { hashPassword } from "../utils/hashPassword.js";
 import { generateOtp, deleteVerificationOtps, generateToken } from "../utils/otp.utils.js";
+import Otp, { OtpPurpose } from "../model/OTP.js";
+import User from "../model/User.js";
+
 
 
 // ======================================================

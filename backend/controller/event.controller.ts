@@ -64,12 +64,6 @@ export const createEvent = asyncHandler(async (req: Request, res: Response) => {
 
 
 
-
-
-
-
-
-
 /**
  * Get All Events
  */
