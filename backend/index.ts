@@ -7,7 +7,7 @@ import cors from "cors";
 import authRoutes from "./routes/auth.js";
 import { errorHandler } from "./middleware/errorMiddleware.js";
 import eventRoutes from "./routes/event.js";
-// import bookingRoutes from "./routes/booking.js";
+import bookingRoutes from "./routes/booking.js";
 
 const app = express();
 
@@ -20,7 +20,7 @@ app.use(express.json());
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/events", eventRoutes);
-// app.use("/api/bookings", bookingRoutes);
+app.use("/api/bookings", bookingRoutes);
 
 
 // MongoDB Connection
