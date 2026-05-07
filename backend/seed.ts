@@ -1,10 +1,10 @@
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
+
 import User from "./model/User.js";
 import Event from "./model/Event.js";
-
-
+import Booking from "./model/Bookings.js";
 
 dotenv.config();
 
@@ -18,22 +18,16 @@ if (!MONGO_URI) {
 const seedDatabase = async () => {
   try {
     await mongoose.connect(MONGO_URI);
-    console.log(" MongoDB Connected");
+    console.log("✅ MongoDB Connected");
 
     // ===============================
-    //  Create Admin User (Idempotent)
+    // ✅ Create Admin User
     // ===============================
 
     const adminEmail = "admin@gmail.com";
+    let adminUser = await User.findOne({ email: adminEmail });
 
-    const existingAdmin = await User.findOne({ email: adminEmail });
-
-    let adminUser;
-
-    if (existingAdmin) {
-      console.log("Admin already exists");
-      adminUser = existingAdmin;
-    } else {
+    if (!adminUser) {
       const hashedPassword = await bcrypt.hash("123456", 10);
 
       adminUser = await User.create({
@@ -43,19 +37,41 @@ const seedDatabase = async () => {
         isVerified: true,
       });
 
-      console.log("Admin user created successfully");
+      console.log("✅ Admin user created");
+    } else {
+      console.log("✅ Admin already exists");
     }
 
     // ===============================
-    // Create Dummy Events (Idempotent)
+    // ✅ Create Normal Test User
     // ===============================
 
-    const existingEvents = await Event.countDocuments();
+    const userEmail = "user@gmail.com";
+    let normalUser = await User.findOne({ email: userEmail });
 
-    if (existingEvents > 0) {
-      console.log("Dummy events already exist");
+    if (!normalUser) {
+      const hashedPassword = await bcrypt.hash("123456", 10);
+
+      normalUser = await User.create({
+        email: userEmail,
+        password: hashedPassword,
+        role: "user",
+        isVerified: true,
+      });
+
+      console.log("✅ Test user created");
     } else {
-      await Event.insertMany([
+      console.log("✅ Test user already exists");
+    }
+
+    // ===============================
+    // ✅ Create Dummy Events
+    // ===============================
+
+    let events = await Event.find();
+
+    if (events.length === 0) {
+      events = await Event.insertMany([
         {
           title: "Tech Conference 2026",
           description: "Annual technology conference",
@@ -78,27 +94,44 @@ const seedDatabase = async () => {
           ticketPrice: 1500,
           organizer: adminUser._id,
         },
-        {
-          title: "Startup Meetup",
-          description: "Entrepreneurs networking event",
-          date: new Date("2026-09-01"),
-          location: "Islamabad Convention Center",
-          category: "business",
-          totalSeats: 200,
-          availableSeats: 200,
-          ticketPrice: 1000,
-          organizer: adminUser._id,
-        },
       ]);
 
-      console.log("Dummy events created successfully");
+      console.log("✅ Dummy events created");
+    } else {
+      console.log("✅ Events already exist");
+    }
+
+    // ===============================
+    // ✅ Create Dummy Bookings
+    // ===============================
+
+    const existingBookings = await Booking.countDocuments();
+
+    if (existingBookings === 0 && normalUser && events.length > 0) {
+      const firstEvent = events[0];
+
+      // Decrease seat for confirmed booking
+      firstEvent.availableSeats -= 1;
+      await firstEvent.save();
+
+      await Booking.create({
+        user: normalUser._id,
+        event: firstEvent._id,
+        status: "confirmed",
+        paymentStatus: "paid",
+        amount: firstEvent.ticketPrice,
+      });
+
+      console.log("✅ Dummy booking created");
+    } else {
+      console.log("✅ Bookings already exist");
     }
 
     console.log("🎉 Seeding completed successfully");
     process.exit(0);
 
   } catch (error) {
-    console.error("Seeding failed:", error);
+    console.error("❌ Seeding failed:", error);
     process.exit(1);
   }
 };
