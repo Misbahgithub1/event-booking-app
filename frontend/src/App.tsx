@@ -1,17 +1,18 @@
+import { BrowserRouter } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import AppRoutes from "./routes/AppRoutes";
 
-// import heroImg from './assets/hero.png'
-import './App.css'
-
+/**
+ * ✅ Root App Component
+ */
 function App() {
-
-
   return (
-   <div className="h-screen flex items-center justify-center bg-black">
-      <h1 className="text-5xl font-bold text-red-400">
-        Tailwind Working 
-      </h1>
-    </div>
-  )
+    <AuthProvider>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </AuthProvider>
+  );
 }
 
-export default App
+export default App;
