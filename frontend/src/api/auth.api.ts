@@ -30,5 +30,5 @@ export const loginUser = async (data: {
   password: string;
 }) => {
   const response = await axiosInstance.post("/auth/login", data);
-  return response.data;
+  return response.data.data;
 };

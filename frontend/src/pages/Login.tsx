@@ -1,15 +1,31 @@
 import { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const { login, loading } = useAuth();
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
-    await login(email, password);
-  };
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  try {
+    const { user } = await login(email, password);
+
+    if (user.role === "admin") {
+      navigate("/admin/dashboard");
+    } else {
+      navigate("/");
+    }
+
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 
   return (
     <div className="flex justify-center items-center h-[80vh]">
@@ -39,7 +55,7 @@ const Login = () => {
 
         <button
           disabled={loading}
-          className="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600"
+          className="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 cursor-pointer"
         >
           {loading ? "Logging in..." : "Login"}
         </button>

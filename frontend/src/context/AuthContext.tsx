@@ -6,10 +6,13 @@ export interface AuthContextType {
 
 
 
-  login: (
-    email: string, password: string
-  ) => Promise<User>;
-
+ login: (
+  email: string,
+  password: string
+) => Promise<{
+  token: string;
+  user: User;
+}>;
 
   register: (email: string, password: string) => Promise<User>;
   verify: (email: string, otp: string) => Promise<User>;

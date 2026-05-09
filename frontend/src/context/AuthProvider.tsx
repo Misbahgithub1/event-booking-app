@@ -21,20 +21,28 @@ export const AuthProvider = ({
 const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const login = useCallback(async (email: string, password: string) => {
+
+const login = useCallback(
+  async (email: string, password: string) => {
     setLoading(true);
 
     try {
-      const data = await loginUser({ email, password });
+      const { token, user } = await loginUser({ email, password });
 
-      setToken(data.token);
-      setUser(data.user);
+      setToken(token);
+      setUser(user);
 
-      return data;
+      return { token, user };
     } finally {
       setLoading(false);
     }
-  }, []);
+  },
+  []
+);
+
+
+
+
 
   const register = useCallback(async (email: string, password: string) => {
     setLoading(true);
