@@ -5,6 +5,8 @@ import { useAuth } from "../../hooks/useAuth";
 const Navbar = () => {
   const { user, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+ const isAdmin = user?.role === "admin";
+
 
   return (
     <nav className="bg-gray-900 text-white shadow-md">
@@ -22,6 +24,14 @@ const Navbar = () => {
               <Link to="/bookings" className="hover:text-green-400">
                 My Bookings
               </Link>
+
+                {/* ADMIN ONLY */}
+      {isAdmin && (
+        <Link to="/admin/dashboard" className="hover:text-green-400">
+          Dashboard
+        </Link>
+      )}
+
               <button
                 onClick={logout}
                 className="bg-red-500 px-3 py-1 rounded hover:bg-red-600"
@@ -63,6 +73,17 @@ const Navbar = () => {
               <Link to="/bookings" className="block">
                 My Bookings
               </Link>
+
+
+                  {/* ADMIN ONLY */}
+    {isAdmin && (
+      <Link to="/admin/dashboard" className="block">
+        Dashboard
+      </Link>
+    )}
+
+
+    
               <button
                 onClick={logout}
                 className="block bg-red-500 px-3 py-1 rounded"

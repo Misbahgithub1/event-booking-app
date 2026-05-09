@@ -4,14 +4,13 @@ import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import VerifyOtp from "../pages/VerifyOtp";
+import Dashboard from "../pages/admin/Dashboard";
+import AdminRoute from "../routes/AdminRoute";
+import NotFound from "../pages/NotFound";
 
-/**
- * ✅ Centralized App Routing
- */
 const AppRoutes = () => {
   return (
     <Routes>
-      {/* ✅ Layout Wrapper */}
       <Route
         path="/"
         element={
@@ -47,6 +46,28 @@ const AppRoutes = () => {
           </Layout>
         }
       />
+
+      {/*  PROTECTED ADMIN ROUTE */}
+      <Route
+        path="/admin/dashboard"
+        element={
+          <AdminRoute>
+            <Layout>
+              <Dashboard />
+            </Layout>
+          </AdminRoute>
+        }
+      />
+
+       <Route
+        path="*"
+        element={
+          <Layout>
+            <NotFound />
+          </Layout>
+        }
+      />
+
     </Routes>
   );
 };

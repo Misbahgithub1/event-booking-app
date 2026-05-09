@@ -1,9 +1,9 @@
 import { BrowserRouter } from "react-router-dom";
-import { AuthProvider } from "./context/AuthContext";
+import { AuthProvider } from "./context/AuthProvider";
 import AppRoutes from "./routes/AppRoutes";
 
 /**
- * ✅ Root App Component
+ *  Root App Component
  */
 function App() {
   return (
