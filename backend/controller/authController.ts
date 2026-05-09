@@ -21,10 +21,10 @@ export const registerUser = asyncHandler(
       );
     }
 
-    const { email, password } = result.data;
+    const { fullName, email, password } = result.data;
 
     try {
-      await registerService(email, password);
+      await registerService(fullName, email, password);
     } catch (err: any) {
       if (err?.message === "USER_EXISTS") {
         throw new ApiError(400, "User already exists");

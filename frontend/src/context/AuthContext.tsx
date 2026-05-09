@@ -14,7 +14,11 @@ export interface AuthContextType {
   user: User;
 }>;
 
-  register: (email: string, password: string) => Promise<User>;
+  register: (
+    fullName: string,
+email: string,
+ password: string
+) => Promise<User>;
   verify: (email: string, otp: string) => Promise<User>;
   logout: () => void;
 }

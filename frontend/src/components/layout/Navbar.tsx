@@ -5,14 +5,14 @@ import { useAuth } from "../../hooks/useAuth";
 const Navbar = () => {
   const { user, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
- const isAdmin = user?.role === "admin";
+  const isAdmin = user?.role === "admin";
 
 
   return (
     <nav className="bg-gray-900 text-white shadow-md">
       <div className="max-w-7xl mx-auto px-4 flex justify-between items-center h-16">
         <Link to="/" className="text-xl font-bold text-green-400">
-          EventBooking
+          EventSphere
         </Link>
 
         {/* Desktop */}
@@ -25,12 +25,12 @@ const Navbar = () => {
                 My Bookings
               </Link>
 
-                {/* ADMIN ONLY */}
-      {isAdmin && (
-        <Link to="/admin/dashboard" className="hover:text-green-400">
-          Dashboard
-        </Link>
-      )}
+              {/* ADMIN ONLY */}
+              {isAdmin && (
+                <Link to="/admin/dashboard" className="hover:text-green-400">
+                  Dashboard
+                </Link>
+              )}
 
               <button
                 onClick={logout}
@@ -75,15 +75,15 @@ const Navbar = () => {
               </Link>
 
 
-                  {/* ADMIN ONLY */}
-    {isAdmin && (
-      <Link to="/admin/dashboard" className="block">
-        Dashboard
-      </Link>
-    )}
+              {/* ADMIN ONLY */}
+              {isAdmin && (
+                <Link to="/admin/dashboard" className="block">
+                  Dashboard
+                </Link>
+              )}
 
 
-    
+
               <button
                 onClick={logout}
                 className="block bg-red-500 px-3 py-1 rounded"

@@ -8,47 +8,43 @@ import User from "../model/User.js";
 
 
 
-// ======================================================
-// OTP EXPIRY CONFIGURATION
-// ======================================================
 
+// OTP EXPIRY CONFIGURATION
 const OTP_EXPIRY = 5 * 60 * 1000;
 
 
-// ======================================================
+
 // REGISTER SERVICE
-// ======================================================
 
-export const registerService = async (email: string, password: string) => {
-
-  
-  // CHECK IF USER ALREADY EXISTS
+export const registerService = async (
+  fullName: string,
+  email: string,
+  password: string
+) => {
+  //  CHECK IF USER ALREADY EXISTS
   const existingUser = await User.findOne({ email });
 
   if (existingUser) {
     throw new Error("USER_EXISTS");
   }
 
- 
-  // HASH USER PASSWORD
+  //  HASH USER PASSWORD
   const hashedPassword = await hashPassword(password);
 
-
-  // CREATE NEW USER (UNVERIFIED)
+  //  CREATE NEW USER (UNVERIFIED)
   const user = await User.create({
+    fullName,
     email,
     password: hashedPassword,
     isVerified: false,
     role: "user",
   });
 
-
-  // GENERATE OTP AND SET EXPIRY
+  //  GENERATE OTP AND SET EXPIRY
   const otp = generateOtp();
   const expiresAt = new Date(Date.now() + OTP_EXPIRY);
 
-
-  // SAVE OTP IN DATABASE
+  //  SAVE OTP IN DATABASE
   await Otp.create({
     email,
     otp,
@@ -56,7 +52,7 @@ export const registerService = async (email: string, password: string) => {
     expiresAt,
   });
 
-  // SEND OTP EMAIL TO USER
+  //  SEND OTP EMAIL TO USER
   await sendEmail({
     to: email,
     type: EmailType.OTP_VERIFICATION,
@@ -64,19 +60,18 @@ export const registerService = async (email: string, password: string) => {
     expiresAt,
   });
 
-
-  // RETURN CREATED USER
+  //  RETURN CREATED USER
   return user;
 };
 
-// ======================================================
+
 // END OF REGISTER SERVICE
-// ======================================================
 
 
-// ------------------------
+
+
 // VERIFY OTP SERVICE
-// ------------------------
+
 export const verifyOtpService = async (email: string, otp: string) => {
 
   // Check valid active non expired otp

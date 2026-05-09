@@ -1,9 +1,10 @@
 import axiosInstance from "./axiosInstance";
 
 /**
- * ✅ Register User
+ *  Register User
  */
 export const registerUser = async (data: {
+   fullName: string;
   email: string;
   password: string;
 }) => {
@@ -12,7 +13,7 @@ export const registerUser = async (data: {
 };
 
 /**
- * ✅ Verify OTP
+ *  Verify OTP
  */
 export const verifyOtp = async (data: {
   email: string;
@@ -23,7 +24,7 @@ export const verifyOtp = async (data: {
 };
 
 /**
- * ✅ Login User
+ *  Login User
  */
 export const loginUser = async (data: {
   email: string;

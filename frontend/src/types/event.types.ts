@@ -1,3 +1,4 @@
+// ✅ Event Categories (Strict typing)
 export type EventCategory =
   | "music"
   | "sports"
@@ -6,6 +7,13 @@ export type EventCategory =
   | "education"
   | "other";
 
+// ✅ Organizer Type
+export interface EventOrganizer {
+  _id: string;
+  email: string;
+}
+
+// ✅ Main Event Type
 export interface Event {
   _id: string;
 
@@ -25,19 +33,19 @@ export interface Event {
 
   ticketPrice: number;
 
-  organizer: string;
+  // ✅ Can be either populated object or string ID
+  organizer: string | EventOrganizer;
 
   createdAt: string;
   updatedAt: string;
 }
 
+// ✅ Payload Type (Create / Update)
 export interface EventPayload {
   title: string;
-
   description?: string;
 
   date: string;
-
   location: string;
 
   image?: string;
@@ -45,8 +53,5 @@ export interface EventPayload {
   category: EventCategory;
 
   totalSeats: number;
-
-  availableSeats: number;
-
   ticketPrice: number;
 }

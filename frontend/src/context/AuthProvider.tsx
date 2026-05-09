@@ -18,51 +18,64 @@ export const AuthProvider = ({
 }: {
   children: ReactNode;
 }) => {
-const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
+  //  LOGIN
+  const login = useCallback(
+    async (email: string, password: string) => {
+      setLoading(true);
 
-const login = useCallback(
-  async (email: string, password: string) => {
-    setLoading(true);
+      try {
+        const { token, user } = await loginUser({
+          email,
+          password,
+        });
 
-    try {
-      const { token, user } = await loginUser({ email, password });
+        setToken(token);
+        setUser(user);
 
-      setToken(token);
-      setUser(user);
+        return { token, user };
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
 
-      return { token, user };
-    } finally {
-      setLoading(false);
-    }
-  },
-  []
-);
+  //  REGISTER (UPDATED)
+  const register = useCallback(
+    async (
+      fullName: string,
+      email: string,
+      password: string
+    ) => {
+      setLoading(true);
+      try {
+        return await registerUser({
+          fullName,
+          email,
+          password,
+        });
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
 
-
-
-
-
-  const register = useCallback(async (email: string, password: string) => {
-    setLoading(true);
-
-    try {
-      return await registerUser({ email, password });
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const verify = useCallback(async (email: string, otp: string) => {
-    setLoading(true);
-
-    try {
-      return await verifyOtp({ email, otp });
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  // VERIFY OTP
+  const verify = useCallback(
+    async (email: string, otp: string) => {
+      setLoading(true);
+      try {
+        return await verifyOtp({ email, otp });
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
 
   const logout = useCallback(() => {
     clearToken();
@@ -70,17 +83,17 @@ const login = useCallback(
   }, []);
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        login,
-        register,
-        verify,
-        logout,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+      <AuthContext.Provider
+        value={{
+          user,
+          loading,
+          login,
+          register,
+          verify,
+          logout,
+        }}
+      >
+        {children}
+      </AuthContext.Provider>
   );
 };
