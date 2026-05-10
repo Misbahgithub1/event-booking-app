@@ -1,8 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  getAllBookings,
-  updateBookingStatus,
-} from "../../api/bookings.api";
+import { getAllBookings, updateBookingStatus } from "../../api/bookings.api";
 import { getAllEvents } from "../../api/events.api";
 import { Event } from "../../types/event.types";
 import { Booking } from "../../types/booking.types";
@@ -23,7 +20,7 @@ const Dashboard = () => {
         const bookingsData = await getAllBookings();
 
         setEvents(eventsData);
-        setBookings(bookingsData); 
+        setBookings(bookingsData);
       } catch (error) {
         console.error(error);
       } finally {
@@ -36,14 +33,12 @@ const Dashboard = () => {
 
   const handleStatusUpdate = async (
     bookingId: string,
-    status: "pending" | "confirmed" | "cancelled"
+    status: "pending" | "confirmed" | "cancelled",
   ) => {
     await updateBookingStatus(bookingId, status);
 
     setBookings((prev) =>
-      prev.map((b) =>
-        b._id === bookingId ? { ...b, status } : b
-      )
+      prev.map((b) => (b._id === bookingId ? { ...b, status } : b)),
     );
   };
 
@@ -57,7 +52,6 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
-
       {/* HEADER */}
       <h1 className="text-4xl font-bold mb-10 text-gray-800">
         Admin Dashboard
@@ -69,45 +63,46 @@ const Dashboard = () => {
         <StatCard title="Total Bookings" value={bookings.length} />
         <StatCard
           title="Confirmed Bookings"
-          value={
-            bookings.filter((b) => b.status === "confirmed")
-              .length
-          }
+          value={bookings.filter((b) => b.status === "confirmed").length}
         />
       </div>
 
-      {/* EVENTS SECTION */}
+      {/* ✅ EVENTS SECTION */}
       <SectionCard title="Manage Events">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b text-gray-500 text-sm uppercase">
-                <th className="py-3">Title</th>
-                <th>Date</th>
-                <th>Seats</th>
-                <th>Price</th>
+        <div className="overflow-x-auto rounded-xl border border-gray-200">
+          <table className="w-full text-left">
+            <thead className="bg-gray-50 text-gray-600 text-sm uppercase tracking-wide">
+              <tr>
+                <th className="px-6 py-4">Event</th>
+                <th className="px-6 py-4">Date</th>
+                <th className="px-6 py-4">Seats</th>
+                <th className="px-6 py-4">Price</th>
               </tr>
             </thead>
 
-            <tbody>
+            <tbody className="divide-y divide-gray-100">
               {events.map((event) => (
                 <tr
                   key={event._id}
-                  className="border-b hover:bg-gray-100 transition"
+                  className="hover:bg-gray-50 transition duration-200"
                 >
-                  <td className="py-3 font-medium">
+                  <td className="px-6 py-4 font-semibold text-gray-800">
                     {event.title}
                   </td>
-                  <td>
-                    {new Date(
-                      event.date
-                    ).toLocaleDateString()}
+
+                  <td className="px-6 py-4 text-gray-500">
+                    {new Date(event.date).toLocaleDateString()}
                   </td>
-                  <td>
-                    {event.availableSeats} /{" "}
-                    {event.totalSeats}
+
+                  <td className="px-6 py-4">
+                    <span className="px-3 py-1 text-xs rounded-full bg-blue-100 text-blue-700 font-medium">
+                      {event.availableSeats} / {event.totalSeats}
+                    </span>
                   </td>
-                  <td>Rs {event.ticketPrice}</td>
+
+                  <td className="px-6 py-4 font-medium text-green-600">
+                    Rs {event.ticketPrice}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -115,62 +110,57 @@ const Dashboard = () => {
         </div>
       </SectionCard>
 
-      {/* BOOKINGS SECTION */}
+      {/* ✅ BOOKINGS SECTION */}
       <SectionCard title="Manage Bookings">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b text-gray-500 text-sm uppercase">
-                <th className="py-3">User</th>
-                <th>Event</th>
-                <th>Status</th>
-                <th>Payment</th>
-                <th>Actions</th>
+        <div className="overflow-x-auto rounded-xl border border-gray-200">
+          <table className="w-full text-left">
+            <thead className="bg-gray-50 text-gray-600 text-sm uppercase tracking-wide">
+              <tr>
+                <th className="px-6 py-4">User</th>
+                <th className="px-6 py-4">Event</th>
+                <th className="px-6 py-4">Status</th>
+                <th className="px-6 py-4">Payment</th>
+                <th className="px-6 py-4">Actions</th>
               </tr>
             </thead>
 
-            <tbody>
+            <tbody className="divide-y divide-gray-100">
               {bookings.map((booking) => (
                 <tr
                   key={booking._id}
-                  className="border-b hover:bg-gray-100 transition"
+                  className="hover:bg-gray-50 transition duration-200"
                 >
-                  <td className="py-3">
+                  <td className="px-6 py-4 font-medium text-gray-800">
                     {booking.user.email}
                   </td>
-                  <td>{booking.event.title}</td>
 
-                  <td>
+                  <td className="px-6 py-4 text-gray-600">
+                    {booking.event.title}
+                  </td>
+
+                  <td className="px-6 py-4">
                     <StatusBadge status={booking.status} />
                   </td>
 
-                  <td>
-                    <PaymentBadge
-                      payment={booking.paymentStatus}
-                    />
+                  <td className="px-6 py-4">
+                    <PaymentBadge payment={booking.paymentStatus} />
                   </td>
 
-                  <td className="space-x-2">
+                  <td className="px-6 py-4 space-x-2">
                     <button
                       onClick={() =>
-                        handleStatusUpdate(
-                          booking._id,
-                          "confirmed"
-                        )
+                        handleStatusUpdate(booking._id, "confirmed")
                       }
-                      className="px-3 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600 transition"
+                      className="px-4 py-2 text-xs font-semibold rounded-lg bg-green-500 text-white hover:bg-green-600 transition"
                     >
                       Confirm
                     </button>
 
                     <button
                       onClick={() =>
-                        handleStatusUpdate(
-                          booking._id,
-                          "cancelled"
-                        )
+                        handleStatusUpdate(booking._id, "cancelled")
                       }
-                      className="px-3 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600 transition"
+                      className="px-4 py-2 text-xs font-semibold rounded-lg bg-red-500 text-white hover:bg-red-600 transition"
                     >
                       Cancel
                     </button>

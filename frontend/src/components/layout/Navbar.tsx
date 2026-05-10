@@ -10,7 +10,7 @@ const Navbar = () => {
 
   return (
     <nav className="bg-gray-900 text-white shadow-md">
-      <div className="max-w-7xl mx-auto px-4 flex justify-between items-center h-16">
+      <div className="w-full mx-auto px-8 flex justify-between items-center h-16">
         <Link to="/" className="text-xl font-bold text-green-400">
           EventSphere
         </Link>
