@@ -4,6 +4,7 @@ import {
   registerService,
   loginService,
   verifyOtpService,
+  resendOtpService,
 } from "../services/auth.service.js";
 
 import { asyncHandler } from "../middleware/asyncHandler.js";
@@ -62,6 +63,45 @@ export const verifyOtp = asyncHandler(
       res,
       statusCode: 200,
       message: "Account verified successfully. Now you can login.",
+    });
+  }
+);
+
+
+// ===============================
+// ✅ ✅ RESEND OTP (NEW)
+// ===============================
+
+export const resendOtp = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { email } = req.body;
+
+    if (!email) {
+      throw new ApiError(400, "Email is required");
+    }
+
+    try {
+      await resendOtpService(email);
+    } catch (err: any) {
+
+      if (err?.message === "USER_NOT_FOUND") {
+        throw new ApiError(404, "User not found");
+      }
+
+      if (err?.message === "ALREADY_VERIFIED") {
+        throw new ApiError(
+          400,
+          "Account already verified. Please login."
+        );
+      }
+
+      throw err;
+    }
+
+    sendResponse({
+      res,
+      statusCode: 200,
+      message: "OTP resent successfully",
     });
   }
 );
