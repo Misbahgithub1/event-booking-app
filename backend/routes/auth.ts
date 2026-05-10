@@ -1,18 +1,42 @@
 import express, { Router } from "express";
-import { registerUser, loginUser, verifyOtp, resendOtp  } from "../controller/authController.js";
+import {
+  registerUser,
+  loginUser,
+  verifyOtp,
+  resendOtp,
+  refreshAccessToken,
+  getMe, 
+} from "../controller/authController.js";
+import { protect } from "../middleware/authMiddleware.js";
+
 
 const router: Router = express.Router();
 
-// Register
+// ===============================
+//  POST /api/auth/register
+// ===============================
 router.post("/register", registerUser);
 
-// Login
+// ===============================
+//  POST /api/auth/login
+// ===============================
 router.post("/login", loginUser);
 
-// verifyOtp
-router.post("/verify-otp", verifyOtp)
+// ===============================
+//  POST /api/auth/verify-otp
+// ===============================
+router.post("/verify-otp", verifyOtp);
 
-// resend Otp
+// ===============================
+//  POST /api/auth/resend-otp
+// ===============================
 router.post("/resend-otp", resendOtp);
+
+// ===============================
+//   POST /api/auth/refresh
+// ===============================
+router.get("/refresh", refreshAccessToken);
+
+router.get("/me", protect, getMe);
 
 export default router;

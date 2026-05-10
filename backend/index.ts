@@ -4,50 +4,68 @@ dotenv.config();
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
+import cookieParser from "cookie-parser"; 
+
 import authRoutes from "./routes/auth.js";
-import { errorHandler } from "./middleware/errorMiddleware.js";
 import eventRoutes from "./routes/event.js";
 import bookingRoutes from "./routes/booking.js";
+import { errorHandler } from "./middleware/errorMiddleware.js";
 
 const app = express();
 
+/* ===============================
+    MIDDLEWARES
+================================ */
 
-// Middlewares
-app.use(cors());
+//  CORS must allow credentials for refresh token cookie
+app.use(
+  cors({
+    origin: "http://localhost:5173", // frontend URL
+    credentials: true,               // allow cookies
+  })
+);
+
 app.use(express.json());
+app.use(cookieParser()); //  Required for refresh token
 
+/* ===============================
+    ROUTES
+================================ */
 
-// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/bookings", bookingRoutes);
 
+/* ===============================
+    MONGODB CONNECTION
+================================ */
 
-// MongoDB Connection
 mongoose
   .connect(process.env.MONGO_URI as string)
   .then(() => {
     if (process.env.NODE_ENV !== "production") {
-      console.log("MongoDB Connected");
+      console.log("✅ MongoDB Connected");
     }
   })
-  .catch((err) => {
-    console.error("Database connection failed");
-    process.exit(1); // fail fast 
+  .catch(() => {
+    console.error("❌ Database connection failed");
+    process.exit(1);
   });
 
+/* ===============================
+    ERROR HANDLER
+================================ */
 
-
-// Error Middleware 
 app.use(errorHandler);
 
+/* ===============================
+    SERVER START
+================================ */
 
-// Server Start
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   if (process.env.NODE_ENV !== "production") {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`🚀 Server running on port ${PORT}`);
   }
 });
-

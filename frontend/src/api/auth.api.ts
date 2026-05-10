@@ -33,3 +33,10 @@ export const loginUser = async (data: {
   const response = await axiosInstance.post("/auth/login", data);
   return response.data.data;
 };
+
+export const refreshAccessToken = async () => {
+  const response = await axiosInstance.get(
+    "/auth/refresh"
+  );
+  return response.data.data.accessToken;
+};

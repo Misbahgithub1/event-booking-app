@@ -2,16 +2,20 @@ import {
   useState,
   ReactNode,
   useCallback,
+  useEffect,
 } from "react";
 
-import { clearToken, setToken } from "../utils/token";
 import {
   loginUser,
   registerUser,
   verifyOtp,
+  refreshAccessToken,
 } from "../api/auth.api";
+
+import { clearToken, setToken } from "../utils/token";
 import { AuthContext } from "./AuthContext";
 import { User } from "../types/auth.types";
+import axiosInstance from "../api/axiosInstance";
 
 export const AuthProvider = ({
   children,
@@ -19,60 +23,65 @@ export const AuthProvider = ({
   children: ReactNode;
 }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  //  LOGIN
-  const login = useCallback(
-    async (email: string, password: string) => {
-      setLoading(true);
-
+  // ✅ Restore session on mount
+  useEffect(() => {
+    const restoreSession = async () => {
       try {
-        const { token, user } = await loginUser({
-          email,
-          password,
-        });
-
+        const token = await refreshAccessToken();
         setToken(token);
-        setUser(user);
 
-        return { token, user };
+        // Optional: Fetch user profile endpoint
+        const response = await axiosInstance.get(
+          "/auth/me"
+        );
+
+        setUser(response.data.data);
+      } catch {
+        clearToken();
+        setUser(null);
       } finally {
         setLoading(false);
       }
+    };
+
+    restoreSession();
+  }, []);
+
+  const login = useCallback(
+    async (email: string, password: string) => {
+      const { accessToken, user } = await loginUser({
+        email,
+        password,
+      });
+
+      setToken(accessToken);
+      setUser(user);
+
+      return { accessToken, user };
     },
     []
   );
 
-  //  REGISTER (UPDATED)
   const register = useCallback(
     async (
       fullName: string,
       email: string,
       password: string
     ) => {
-      setLoading(true);
-      try {
-        return await registerUser({
-          fullName,
-          email,
-          password,
-        });
-      } finally {
-        setLoading(false);
-      }
+      return await registerUser({
+        fullName,
+        email,
+        password,
+      });
     },
     []
   );
 
-  // VERIFY OTP
   const verify = useCallback(
     async (email: string, otp: string) => {
-      setLoading(true);
-      try {
-        return await verifyOtp({ email, otp });
-      } finally {
-        setLoading(false);
-      }
+      return await verifyOtp({ email, otp });
     },
     []
   );
@@ -80,20 +89,21 @@ export const AuthProvider = ({
   const logout = useCallback(() => {
     clearToken();
     setUser(null);
+    window.location.href = "/login";
   }, []);
 
   return (
-      <AuthContext.Provider
-        value={{
-          user,
-          loading,
-          login,
-          register,
-          verify,
-          logout,
-        }}
-      >
-        {children}
-      </AuthContext.Provider>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        login,
+        register,
+        verify,
+        logout,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
   );
 };
