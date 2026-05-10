@@ -61,16 +61,6 @@ const bookingSchema = new Schema<IBooking>(
             required: [true, "Amount is required"],
             min: [0, "Amount cannot be negative"],
         },
-
-        // otp: {
-        //     type: String,
-        // },
-
-        // otpExpiresAt: {
-        //     type: Date,
-        // },
-
-
     },
     {
         timestamps: true,

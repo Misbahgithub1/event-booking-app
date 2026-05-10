@@ -7,7 +7,7 @@ import {
 } from "../types/event.types";
 
 /**
- * ✅ Get All Events (Public)
+ *  Get All Events (Public)
  */
 export const getAllEvents = async (
   params?: {
@@ -27,7 +27,7 @@ export const getAllEvents = async (
 };
 
 /**
- * ✅ Search Events (Public)
+ *  Search Events (Public)
  */
 export const searchEvents = async (
   query: string
@@ -43,7 +43,7 @@ export const searchEvents = async (
 };
 
 /**
- * ✅ Get Logged-in User Events (Private)
+ *  Get Logged-in User Events (Private)
  */
 export const getMyEvents = async (): Promise<Event[]> => {
   const response = await axiosInstance.get<ApiResponse<Event[]>>(
@@ -54,7 +54,7 @@ export const getMyEvents = async (): Promise<Event[]> => {
 };
 
 /**
- * ✅ Get Single Event
+ *  Get Single Event
  */
 export const getSingleEvent = async (
   id: string
@@ -67,7 +67,7 @@ export const getSingleEvent = async (
 };
 
 /**
- * ✅ Create Event (Admin only)
+ *  Create Event (Admin only)
  */
 export const createEvent = async (
   data: EventPayload
@@ -81,7 +81,7 @@ export const createEvent = async (
 };
 
 /**
- * ✅ Update Event (Admin only)
+ *  Update Event (Admin only)
  */
 export const updateEvent = async (
   id: string,
@@ -97,7 +97,7 @@ export const updateEvent = async (
 };
 
 /**
- * ✅ Delete Event (Admin only)
+ *  Delete Event (Admin only)
  */
 export const deleteEvent = async (
   id: string
