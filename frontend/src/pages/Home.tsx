@@ -41,7 +41,7 @@ const Home = () => {
       {/* EVENTS */}
       <section
         id="events"
-        className="bg-gray-100 text-gray-900 py-16 px-4 min-h-screen"
+        className="bg-gray-100 text-gray-900 px-4 min-h-screen"
       >
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">

@@ -28,6 +28,17 @@ app.use(
 app.use(express.json());
 app.use(cookieParser()); //  Required for refresh token
 
+
+
+/* ===============================
+   ✅ STATIC UPLOADS FOLDER
+================================ */
+
+// ✅ VERY IMPORTANT
+app.use("/uploads", express.static("uploads"));
+
+
+
 /* ===============================
     ROUTES
 ================================ */

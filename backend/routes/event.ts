@@ -11,14 +11,13 @@ import {
 } from "../controller/event.controller.js";
 
 import { authorizeRoles, protect } from "../middleware/authMiddleware.js";
+import { upload } from "../middleware/uploadMiddleware.js";
 
 const router: Router = express.Router();
 
-/**
- * POST /api/events
- * Create event (Admin only)
- */
-router.post("/", protect, authorizeRoles("admin"), createEvent);
+/* ===============================
+   ✅ PUBLIC ROUTES
+================================ */
 
 /**
  * GET /api/events
@@ -33,27 +32,59 @@ router.get("/", getAllEvents);
 router.get("/search", searchEvents);
 
 /**
- * GET /api/events/user/my-events
- * Get user's events (Private)
- */
-router.get("/user/my-events", protect, authorizeRoles("user"), getMyEvents ); 
-
-/**
  * GET /api/events/:id
  * Get single event (Public)
  */
-router.get("/:id", protect, getSingleEvent); 
+router.get("/:id", getSingleEvent);
+
+/* ===============================
+   ✅ PROTECTED ROUTES
+================================ */
+
+/**
+ * GET /api/events/user/my-events
+ * Get logged-in user's events
+ */
+router.get(
+  "/user/my-events",
+  protect,
+  authorizeRoles("admin", "user"),
+  getMyEvents
+);
+
+/**
+ * POST /api/events
+ * Create event (Admin only)
+ */
+router.post(
+  "/",
+  protect,
+  authorizeRoles("admin"),
+  upload.single("image"),
+  createEvent
+);
 
 /**
  * PUT /api/events/:id
  * Update event (Admin only)
  */
-router.put("/:id", protect, authorizeRoles("admin"), updateEvent);
+router.put(
+  "/:id",
+  protect,
+  authorizeRoles("admin"),
+  upload.single("image"),
+  updateEvent
+);
 
 /**
  * DELETE /api/events/:id
  * Delete event (Admin only)
  */
-router.delete("/:id", protect, authorizeRoles("admin"), deleteEvent);
+router.delete(
+  "/:id",
+  protect,
+  authorizeRoles("admin"),
+  deleteEvent
+);
 
 export default router;

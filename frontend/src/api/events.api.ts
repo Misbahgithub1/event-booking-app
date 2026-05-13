@@ -3,7 +3,7 @@ import { ApiResponse } from "../types/api.types";
 
 import {
   Event,
-  EventPayload,
+  
 } from "../types/event.types";
 
 /**
@@ -70,11 +70,16 @@ export const getSingleEvent = async (
  *  Create Event (Admin only)
  */
 export const createEvent = async (
-  data: EventPayload
+  data: FormData
 ): Promise<Event> => {
-  const response = await axiosInstance.post<ApiResponse<Event>>(
+  const response = await axiosInstance.post(
     "/events",
-    data
+    data,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
   );
 
   return response.data.data;
@@ -85,12 +90,16 @@ export const createEvent = async (
  */
 export const updateEvent = async (
   id: string,
-  data: EventPayload
+  data: FormData
 ): Promise<Event> => {
-  const response = await axiosInstance.put<ApiResponse<Event>>(
-
+  const response = await axiosInstance.put(
     `/events/${id}`,
-    data
+    data,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
   );
 
   return response.data.data;
