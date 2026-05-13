@@ -1,39 +1,24 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import EventsGrid from "../components/events/EventsGrid";
 import { getAllEvents } from "../api/events.api";
 import { Event } from "../types/event.types";
 
 const Home = () => {
-  const [events, setEvents] = useState<Event[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let mounted = true;
-
-    const fetchEvents = async () => {
-      try {
-        const data = await getAllEvents({ sort: "-createdAt" });
-        if (mounted) setEvents(data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    };
-
-    fetchEvents();
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
+  const {
+    data: events = [],
+    isLoading,
+  } = useQuery<Event[]>({
+    queryKey: ["events"],
+    queryFn: () =>
+      getAllEvents({ sort: "-createdAt" }),
+  });
 
   return (
-    <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
+    <div className="bg-gradientisLoading-to-br from-gray-900 via-gray-800 to-black text-white">
       
       {/* HERO */}
       <section className="h-screen flex flex-col justify-center items-center text-center px-6">
-        <h1 className="text-4xl md:text-6xl font-extrabold leading-tight bg-gradient-to-r from-green-400 via-teal-400 to-blue-500 bg-clip-text text-transparent animate-fade-in ">
+        <h1 className="text-4xl md:text-6xl font-extrabold leading-tight bg-gradient-to-r from-green-400 via-teal-400 to-blue-500 bg-clip-text text-transparent animate-fade-in">
           Discover Amazing Events
         </h1>
 
@@ -47,7 +32,7 @@ const Home = () => {
               .getElementById("events")
               ?.scrollIntoView({ behavior: "smooth" })
           }
-          className="mt-8 bg-green-500 hover:bg-green-600 transition px-6 py-3 rounded-full cursor-pointer font-semibold shadow-lg hover:shadow-green-500/40"
+          className="mt-8 bg-green-500 hover:bg-green-600 transition px-6 py-3 rounded-full font-semibold shadow-lg hover:shadow-green-500/40"
         >
           Browse Events ↓
         </button>
@@ -68,8 +53,7 @@ const Home = () => {
             </p>
           </div>
 
-          {loading ? (
-            // ✅ FULL SECTION SKELETON
+          {isLoading ? (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {Array.from({ length: 6 }).map((_, i) => (
                 <div
@@ -86,7 +70,6 @@ const Home = () => {
               ))}
             </div>
           ) : (
-            //  SHOW REAL EVENTS ONLY AFTER FULL LOAD
             <div className="animate-fade-in">
               <EventsGrid events={events} />
             </div>
