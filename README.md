@@ -75,7 +75,3 @@ A full-stack Event Booking platform built using the MERN stack with secure authe
 - Stats overview
 - Clean Tailwind UI
 - Fully React Query powered
-
----
-
-# 📂 Project Structure
